@@ -19,5 +19,6 @@
     "strict": true,
     "strictPropertyInitialization": false
   },
+  "include": ["**/*"],
   "exclude": ["node_modules"]
 }
