@@ -1,4 +1,21 @@
-# Assignment: CRUD API
+## Install
+
+`npm i`
+
+## Run
+
+`npm run start`
+
+## Using
+
+- open browser with url =`http://localhost:3000` and tes GET requests
+- use Postman etc tools for test all requests
+
+## What is need testing
+
+- POST
+- GET
+- PUT
 
 ## Description
 
