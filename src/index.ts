@@ -1,34 +1,28 @@
 import * as http from 'http';
+import { usersRoute } from './routes/usersRoute';
 
 const hostname = '127.0.0.1';
 const port = 3000;
 
-const posts = [
-  {
-    title: 'Lorem ipsum',
-    content: 'Dolor sit amet',
-  },
-];
-
 const server = http.createServer((request, response) => {
-  console.log('req', request.url);
+  const splittedUrl = request.url?.split('/') ?? [];
+  console.log('req', splittedUrl);
 
-  switch (request.url) {
-    case '/posts': {
-      response.statusCode = 200;
-      if (request.method === 'GET') {
-        response.end(JSON.stringify(posts));
-      }
+  if (splittedUrl[1] !== 'api') {
+    response.statusCode = 404;
+    response.end();
+    return;
+  }
+
+  switch (splittedUrl[2]) {
+    case 'users': {
+      usersRoute(request, response);
       break;
     }
-    case '/':
-      response.statusCode = 200;
-      response.setHeader('Content-Type', 'text/plain');
-      response.end('Hello World\n');
-      break;
     default: {
       response.statusCode = 404;
-      response.end();
+      response.setHeader('Content-Type', 'text/plain');
+      response.end('wrong URL\n');
     }
   }
 });
