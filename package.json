@@ -29,6 +29,8 @@
     "typescript": "^5.3.3"
   },
   "dependencies": {
+    "cross-env": "^7.0.3",
+    "dotenv": "^16.4.2",
     "uuid": "^9.0.1"
   }
 }

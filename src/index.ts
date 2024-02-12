@@ -1,8 +1,9 @@
 import { createServer } from 'http';
 import { usersRoute } from './routes/users';
+import 'dotenv/config';
 
 const hostname = '127.0.0.1';
-const port = 3000;
+const port = process.env.PORT ?? 3000;
 
 const server = createServer((request, response) => {
   const splittedUrl = request.url?.split('/') ?? [];
