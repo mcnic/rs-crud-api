@@ -1,11 +1,14 @@
 import request from 'supertest';
 import 'dotenv/config';
 import { TUser } from 'routes/users/usersBehavior';
+import { availableParallelism } from 'node:os';
 
 const hostname = '127.0.0.1';
 const port = Number(process.env.PORT) ?? 3000;
 
 const app = `http://${hostname}:${port}/`;
+
+const getApp = (newPort?: number) => `http://${hostname}:${newPort ?? port}/`;
 
 const wrongUser = {
   wrong: 1,
@@ -168,6 +171,33 @@ describe('api test', () => {
 
     // delete unexists users
     res = await request(app).delete(`api/users/${newUser.id}`);
+    expect(res.statusCode).toEqual(404);
+  });
+});
+
+describe('cluster api test', () => {
+  test('consistence user data', async () => {
+    const numCPUs = availableParallelism();
+    expect(numCPUs).toBeGreaterThan(3);
+
+    let res;
+
+    // create new user on node 1
+    res = await request(getApp(4001)).post('api/users').send(correctUser);
+    expect(res.statusCode).toEqual(201);
+    const newUser = res.body;
+
+    // get new users on node 2
+    res = await request(getApp(4002)).get(`api/users/${newUser.id}`);
+    expect(res.statusCode).toEqual(200);
+    expect(res.body).toBeDefined();
+
+    // delete users on node 3
+    res = await request(getApp(4002)).delete(`api/users/${newUser.id}`);
+    expect(res.statusCode).toEqual(204);
+
+    // get deleted users on node 3
+    res = await request(getApp(4002)).get(`api/users/${newUser.id}`);
     expect(res.statusCode).toEqual(404);
   });
 });

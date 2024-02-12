@@ -1,3 +1,4 @@
+import { getStore, setStore } from '../../db/store';
 import { ServerResponse, IncomingMessage } from 'http';
 import { parse, v4 as uuidv4 } from 'uuid';
 
@@ -10,8 +11,6 @@ export type TUser = {
 
 const isBodyCorrect = (body: TUser): boolean =>
   !(!body || !body.username || !body.age || !Array.isArray(body.hobbies));
-
-const users: TUser[] = [];
 
 const testUserId = (
   userId: string,
@@ -33,13 +32,15 @@ const testUserId = (
   }
 };
 
-export const getUsers = (
+export const getUsers = async (
   request: IncomingMessage,
   response: ServerResponse<IncomingMessage> & {
     req: IncomingMessage;
   },
 ) => {
   const userId = request.url?.split('/')[3] ?? '';
+
+  const users = await getStore();
 
   if (!userId) {
     // get all users
@@ -75,7 +76,7 @@ export const postUser = (
     body += chunk.toString();
   });
 
-  request.on('end', () => {
+  request.on('end', async () => {
     try {
       const user: TUser = JSON.parse(body);
 
@@ -85,8 +86,14 @@ export const postUser = (
         response.end('wrong data for create user');
         return;
       }
+
+      const users = await getStore();
+
       user.id = uuidv4();
       users.push(user);
+
+      await setStore(users);
+
       response.statusCode = 201;
       response.setHeader('Content-Type', 'application/json');
       response.end(JSON.stringify(user));
@@ -94,7 +101,7 @@ export const postUser = (
     } catch (error) {
       response.statusCode = 500;
       response.setHeader('Content-Type', 'text/plain');
-      response.end('server error\n');
+      response.end(String(error));
       return;
     }
   });
@@ -121,9 +128,10 @@ export const putUser = (
     body += chunk.toString();
   });
 
-  request.on('end', () => {
+  request.on('end', async () => {
     try {
       let userNum: number = -1;
+      const users = await getStore();
       users.forEach((el, num) => {
         if (el.id === userId) userNum = num;
       });
@@ -131,6 +139,7 @@ export const putUser = (
       // user found, update
       if (userNum >= 0) {
         users[userNum] = { ...users[userNum], ...JSON.parse(body) };
+        await setStore(users);
 
         response.statusCode = 200;
         response.setHeader('Content-Type', 'application/json');
@@ -150,7 +159,7 @@ export const putUser = (
   });
 };
 
-export const deleteUsers = (
+export const deleteUsers = async (
   request: IncomingMessage,
   response: ServerResponse<IncomingMessage> & {
     req: IncomingMessage;
@@ -166,6 +175,7 @@ export const deleteUsers = (
   }
 
   let userNum: number = -1;
+  const users = await getStore();
   users.forEach((el, num) => {
     if (el.id === userId) userNum = num;
   });
@@ -173,6 +183,7 @@ export const deleteUsers = (
   // user found, delete
   if (userNum >= 0) {
     users.splice(userNum, 1);
+    await setStore(users);
 
     response.statusCode = 204;
     response.setHeader('Content-Type', 'text/plain');

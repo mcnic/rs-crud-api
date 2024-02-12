@@ -9,6 +9,7 @@
   "scripts": {
     "start:dev": "cross-env NODE_ENV=deveolop tsnd --respawn --transpile-only src/index.ts",
     "start:prod": "cross-env NODE_ENV=production tsc --build && node dist/index.js",
+    "start:multi": "cross-env NODE_CLUSTER=true tsnd --respawn --transpile-only src/index.ts",
     "test": "cross-env NODE_ENV=test jest --testTimeout=5000"
   },
   "repository": {
