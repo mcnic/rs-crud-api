@@ -37,10 +37,6 @@ const createServerNode = (port: number) => {
   });
 };
 
-getStore().then((res) => {
-  console.log('store data', res);
-});
-
 if (process.env.NODE_CLUSTER) {
   const numCPUs = availableParallelism();
 
