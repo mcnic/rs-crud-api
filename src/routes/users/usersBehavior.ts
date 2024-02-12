@@ -2,7 +2,7 @@ import { ServerResponse, IncomingMessage } from 'http';
 import { parse, v4 as uuidv4 } from 'uuid';
 
 export type TUser = {
-  id: string;
+  id?: string;
   username: string;
   age: number;
   hobbies: string[];
@@ -172,7 +172,7 @@ export const deleteUsers = (
 
   // user found, delete
   if (userNum >= 0) {
-    delete users[userNum];
+    users.splice(userNum, 1);
 
     response.statusCode = 204;
     response.setHeader('Content-Type', 'text/plain');
