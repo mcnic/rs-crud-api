@@ -1,16 +1,16 @@
-import * as http from 'http';
-import { usersRoute } from './routes/usersRoute';
+import { createServer } from 'http';
+import { usersRoute } from './routes/users';
 
 const hostname = '127.0.0.1';
 const port = 3000;
 
-const server = http.createServer((request, response) => {
+const server = createServer((request, response) => {
   const splittedUrl = request.url?.split('/') ?? [];
-  console.log('req', splittedUrl);
 
   if (splittedUrl[1] !== 'api') {
     response.statusCode = 404;
-    response.end();
+    response.setHeader('Content-Type', 'text/plain');
+    response.end('wrong endpoint\n');
     return;
   }
 
@@ -22,7 +22,7 @@ const server = http.createServer((request, response) => {
     default: {
       response.statusCode = 404;
       response.setHeader('Content-Type', 'text/plain');
-      response.end('wrong URL\n');
+      response.end('wrong endpoint\n');
     }
   }
 });
