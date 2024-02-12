@@ -25,7 +25,7 @@ export const usersRoute = (
       break;
     }
     default: {
-      response.statusCode = 400;
+      response.statusCode = 404;
       response.setHeader('Content-Type', 'text/plain');
       response.end('wrong users api request\n');
     }
