@@ -17,7 +17,8 @@
     "skipLibCheck": true,
     "sourceMap": false,
     "strict": true,
-    "strictPropertyInitialization": false
+    "strictPropertyInitialization": false,
+    "outDir": "dist"
   },
   "include": ["**/*"],
   "exclude": ["node_modules"]
